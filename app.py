@@ -69,6 +69,21 @@ def read_aloud(text):
     )
 
 
+def attempt(key):
+    """Count attempts on a check button; returns the new attempt number."""
+    k = f"attempts_{key}"
+    st.session_state[k] = st.session_state.get(k, 0) + 1
+    return st.session_state[k]
+
+
+def explain(title, lines):
+    body = "<br>".join(lines)
+    st.markdown(
+        f'''<div class="reflect-box"><b>💡 {title}</b><br>{body}</div>''',
+        unsafe_allow_html=True,
+    )
+
+
 def timer(text):
     st.markdown(f'<div class="timer">⏱ {text}</div>', unsafe_allow_html=True)
 
@@ -269,6 +284,9 @@ elif slide == 1:
     if check:
         score = sum(1 for (a, b), ans in zip(st.session_state.sprint, answers) if a * b == ans)
         st.session_state.sprint_score = score
+        n = attempt("sprint")
+        if score == 10:
+            st.balloons()
         if score >= 9:
             st.success(f"{score}/10 — facts are solid. Stand behind {score} on the bar graph.")
         elif score >= 6:
@@ -278,6 +296,13 @@ elif slide == 1:
         missed = [(a, b) for (a, b), ans in zip(st.session_state.sprint, answers) if a * b != ans]
         if missed:
             st.markdown("**Sketch one you missed as a dot array on graph paper:** " + ", ".join(f"{a} × {b}" for a, b in missed[:3]))
+            if n >= 2:
+                explain(
+                    "Redo help — count by rows",
+                    [f"{a} × {b}: draw {a} rows of {b} dots. Skip-count {b}, {2*b}, {3*b}… {a} times → <b>{a*b}</b>" for a, b in missed[:4]],
+                )
+            else:
+                st.info("Fix the ones you missed and check again — the second check shows a worked explanation.")
 
 # ============================================================
 # SLIDE 2 — TRY IT
@@ -294,10 +319,19 @@ elif slide == 2:
     with right:
         guess = st.number_input("How many squares are inside?", min_value=0, max_value=200, step=1, key="tryit")
         if st.button("Check", key="tryit_check"):
+            n = attempt("tryit")
             if guess == 48:
+                st.balloons()
                 st.success("48 square units. 6 rows of 8 — that's 6 × 8.")
             else:
                 st.error("Not yet. Count one row, then count how many rows.")
+                if n >= 2:
+                    explain(
+                        "Redo help",
+                        ["One row across the bottom has <b>8</b> squares.",
+                         "Stack <b>6</b> of those rows going up.",
+                         "6 rows × 8 squares = <b>48 square units</b>. That's why area = rows × columns."],
+                    )
         st.markdown(
             """
             <div class="reflect-box">
@@ -361,13 +395,26 @@ elif slide == 3:
     if st.button("Check our rectangle", key="check_rect", use_container_width=True):
         expected = [r * c for r, c in labels]
         ok_pieces = all(p == e for p, e in zip(pieces, expected) if e)
+        n = attempt("rect")
         if ok_pieces and total == int(base) * int(height):
+            st.balloons()
             st.success(f"Correct! {base} × {height} = {' + '.join(str(e) for e in expected if e)} = {int(base) * int(height)} square units.")
             st.session_state.throws.append((int(base), int(height), int(base) * int(height)))
         elif ok_pieces:
             st.warning("Pieces are right — check your addition for the total.")
+            if n >= 2:
+                explain("Redo help — the addition", [f"{' + '.join(str(e) for e in expected if e)} = <b>{int(base) * int(height)}</b>. Add the two big pieces first, then the small ones."])
         else:
             st.error("One or more pieces is off. Point to that piece on your drawing and count its rows.")
+            if n >= 2:
+                wrong = [(r, c, p) for (r, c), p in zip(labels, pieces) if r and c and p != r * c]
+                explain(
+                    "Redo help — one piece at a time",
+                    [f"The {r} × {c} piece: {r} rows of {c}. Skip-count by {c} → <b>{r*c}</b> (you wrote {p})." for r, c, p in wrong]
+                    + [f"Then add every piece: {' + '.join(str(e) for e in expected if e)} = <b>{int(base) * int(height)}</b>."],
+                )
+            else:
+                st.info("Fix it and check again — the second check walks through each piece.")
     if st.session_state.throws:
         st.markdown("**Team record**")
         st.table([{"Base": b, "Height": h, "Area (sq units)": a} for b, h, a in st.session_state.throws])
@@ -487,12 +534,26 @@ elif slide == 6:
     if enrich:
         q4 = st.number_input("4. A parallelogram has base 6 and height 4. Area = ?", 0, 500, step=1, key="et4")
     if st.button("Submit exit ticket", key="et_submit", use_container_width=True):
-        results = [(q1 == 63, "63 — 7 × 9"), (q2 == 312, "312 — 200 + 40 + 60 + 12"), (q3 == 12, "12 — because 8 × 12 = 96")]
+        n = attempt("exit")
+        results = [
+            (q1 == 63, "63", ["7 rows of 9 squares.", "Skip-count 9, 18, 27, 36, 45, 54, <b>63</b>."]),
+            (q2 == 312, "312", ["Split 24 → 20 + 4 and 13 → 10 + 3.", "10×20 = 200, 10×4 = 40, 3×20 = 60, 3×4 = 12.", "200 + 40 + 60 + 12 = <b>312</b>."]),
+            (q3 == 12, "12", ["Area = base × height, so 96 = 8 × ?", "8 × 10 = 80, 8 × 12 = 96 → height = <b>12</b>."]),
+        ]
         if enrich:
-            results.append((q4 == 24, "24 — same as a 6 × 4 rectangle"))
-        score = sum(1 for ok, _ in results if ok)
-        for i, (ok, ans) in enumerate(results, start=1):
-            (st.success if ok else st.error)(f"Problem {i}: {'✔' if ok else '✘'}  {ans}")
+            results.append((q4 == 24, "24", ["Slice the triangle off one end and slide it over.", "It becomes a 6 × 4 rectangle = <b>24</b>."]))
+        score = sum(1 for ok, _, _ in results if ok)
+        for i, (ok, ans, why) in enumerate(results, start=1):
+            if ok:
+                st.success(f"Problem {i}: ✔ {ans}")
+            else:
+                st.error(f"Problem {i}: ✘")
+                if n >= 2:
+                    explain(f"Problem {i} — how to get it", why)
+        if score == len(results):
+            st.balloons()
+        elif n == 1:
+            st.info("Fix any ✘ and submit again — the second submit shows how each one works.")
         st.markdown(f"**{name or 'Student'}: {score} / {len(results)}**")
         if q2 != 312:
             st.warning("Problem 2 is the one that matters for tomorrow. Draw 24 × 13, split it, and try again in your journal.")
