@@ -557,7 +557,7 @@ elif slide == 5:
             <i>Got the split with help; facts mostly there.</i><br><br>
             1. Three rectangles from the card deck, four-piece split.<br>
             2. Backwards problem: area 96, base 8 — find the height.<br>
-            3. IXL <b>8PN</b> — Area of rectangles and squares.
+            3. <a href="https://www.ixl.com/math/grade-6/area-of-rectangles-and-squares" target="_blank" rel="noopener noreferrer">📝 HMWK — IXL <b>GG.2</b>: Area of rectangles and squares</a>.
             </div>
             """,
             unsafe_allow_html=True,
@@ -575,6 +575,16 @@ elif slide == 5:
             """,
             unsafe_allow_html=True,
         )
+    st.markdown(
+        """
+        <div class="station-card">
+        <span class="shape-tag">✏️ Homework reminder</span><br>
+        Show ALL work by hand — pencil and paper (graph paper is best), written out in your math notebook.
+        IXL is for practice and scoring; your notebook is the record of your work.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.markdown("[Open the IXL skill plan for i-Ready Grade 6 (all codes above are on page 1)](https://www.ixl.com/math/skill-plans/i-ready-classroom-mathematics-2024-grade-6)")
     st.markdown("**Board self-check** — which board are you on?")
     board = st.radio("", ["Engage", "Explore", "Enrich"], horizontal=True, key="board_pick", label_visibility="collapsed")
