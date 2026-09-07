@@ -39,6 +39,12 @@ def inject_css():
                            padding: 1.2rem 1.5rem; margin: 0.8rem 0 1.2rem 0; font-size: 1.2rem; line-height: 1.6; }}
         .exist-know-label {{ display: inline-block; background-color: #3C8B5D; color: white; font-weight: 800;
                              font-size: 0.95rem; padding: 0.25rem 0.8rem; border-radius: 999px; margin-bottom: 0.6rem; }}
+        .math-lit-box {{ background-color: {TENS}; border: 3px solid {NAVY}; border-radius: 10px;
+                         padding: 1.2rem 1.5rem; margin: 0.8rem 0 1.2rem 0; font-size: 1.2rem; line-height: 1.6; }}
+        .math-lit-label {{ display: inline-block; background-color: {NAVY}; color: white; font-weight: 800;
+                           font-size: 0.95rem; padding: 0.25rem 0.8rem; border-radius: 999px; margin-bottom: 0.6rem; }}
+        .math-lit-example {{ margin-top: 0.6rem; padding-top: 0.6rem; border-top: 2px dashed {NAVY};
+                             font-weight: 700; color: {NAVY}; }}
         .class-question {{ margin-top: 0.8rem; padding-top: 0.8rem; border-top: 2px dashed #3C8B5D;
                            font-weight: 700; color: {NAVY}; }}
         .station-card {{ background-color: #FFFFFF; border: 2px solid {GOLD}; border-radius: 12px;
@@ -84,6 +90,20 @@ def existing_knowledge(text, question):
         <span class="exist-know-label">🧠 EXISTING KNOWLEDGE</span><br>
         "{text}"
         <div class="class-question">❓ Ask the class: {question}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def math_literacy(text, example):
+    """Vocabulary box: define a math term in plain language, then work one example."""
+    st.markdown(
+        f"""
+        <div class="math-lit-box">
+        <span class="math-lit-label">📖 MATH LITERACY: UNLOCK THE WORDS</span><br>
+        {text}
+        <div class="math-lit-example">{example}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -252,6 +272,13 @@ if slide == 0:
         st.success(f"Welcome back, {name} the {avatar}! You're in {mode} today. Let's begin Day 5.")
     else:
         st.info("Type your name in the sidebar and pick a shape avatar to sign in.")
+    math_literacy(
+        "Multiplication means the <b>number of groups</b> times the <b>size of each group</b>. "
+        "The first factor tells you how many groups you have; the second factor tells you how many "
+        "are inside each group.",
+        "🧮 So 4 × 3 means 4 groups of 3 — imagine 4 bags, each holding 3 apples. "
+        "3 + 3 + 3 + 3 = <b>12</b>, so 4 × 3 = <b>12</b>.",
+    )
     existing_knowledge(
         "Before we multiply anything, let's agree on what area even means. Area is the amount of flat, "
         "two-dimensional space a shape covers — nothing more. Picture the top of your desk, the cover of "
