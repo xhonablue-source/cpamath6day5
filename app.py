@@ -35,6 +35,12 @@ def inject_css():
                           padding: 1.2rem 1.5rem; margin: 0.8rem 0 1.2rem 0; font-size: 1.25rem; line-height: 1.6; }}
         .readaloud-label {{ display: inline-block; background-color: {NAVY}; color: white; font-weight: 800;
                             font-size: 0.95rem; padding: 0.25rem 0.8rem; border-radius: 999px; margin-bottom: 0.6rem; }}
+        .exist-know-box {{ background-color: #EAF6EC; border: 3px solid #3C8B5D; border-radius: 10px;
+                           padding: 1.2rem 1.5rem; margin: 0.8rem 0 1.2rem 0; font-size: 1.2rem; line-height: 1.6; }}
+        .exist-know-label {{ display: inline-block; background-color: #3C8B5D; color: white; font-weight: 800;
+                             font-size: 0.95rem; padding: 0.25rem 0.8rem; border-radius: 999px; margin-bottom: 0.6rem; }}
+        .class-question {{ margin-top: 0.8rem; padding-top: 0.8rem; border-top: 2px dashed #3C8B5D;
+                           font-weight: 700; color: {NAVY}; }}
         .station-card {{ background-color: #FFFFFF; border: 2px solid {GOLD}; border-radius: 12px;
                          padding: 1rem 1.2rem; margin-bottom: 0.8rem; font-size: 1.1rem; }}
         .shape-tag {{ display: inline-block; background-color: {GOLD}; color: white; font-weight: 800;
@@ -63,6 +69,21 @@ def read_aloud(text):
         <div class="readaloud-box">
         <span class="readaloud-label">🔊 READ ALOUD</span><br>
         "{text}"
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def existing_knowledge(text, question):
+    """Prior-knowledge activator: an engaging read-aloud on the big idea,
+    plus a class discussion question, before any content-specific work begins."""
+    st.markdown(
+        f"""
+        <div class="exist-know-box">
+        <span class="exist-know-label">🧠 EXISTING KNOWLEDGE</span><br>
+        "{text}"
+        <div class="class-question">❓ Ask the class: {question}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -231,6 +252,18 @@ if slide == 0:
         st.success(f"Welcome back, {name} the {avatar}! You're in {mode} today. Let's begin Day 5.")
     else:
         st.info("Type your name in the sidebar and pick a shape avatar to sign in.")
+    existing_knowledge(
+        "Before we multiply anything, let's agree on what area even means. Area is the amount of flat, "
+        "two-dimensional space a shape covers — nothing more. Picture the top of your desk, the cover of "
+        "this journal, or the free-throw lane on a basketball court. If you laid pennies flat, edge to edge, "
+        "with no gaps and no overlaps, until they completely covered one of those surfaces, the number of "
+        "pennies it took would be the area. Area only cares about flat surface — not how heavy something is, "
+        "not how tall it is, and not the distance around its edge. That last one has its own name — "
+        "perimeter — and that's a different idea for a different day.",
+        "Look around this room right now and point to one flat surface. How would you describe how "
+        "'big' it is without touching it, picking it up, or using a formula? Is what you just described "
+        "area, or something else?",
+    )
     read_aloud(
         "On Day 1 you drew shapes on graph paper. On Day 4 you tested the Engage / Explore / Enrich boards. "
         "Today those two things meet. You are going to find the area of rectangles — and you are going to "
